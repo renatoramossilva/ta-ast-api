@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "ta-ast-api"
+version = "0.1.0"
+description = "Technical Test Software Engineer Athlos"
+authors = ["Renato Silva <renatoramossilva@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
