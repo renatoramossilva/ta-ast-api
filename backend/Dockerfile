@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app/backend
 
-COPY pyproject.toml poetry.lock /app/
+COPY backend/pyproject.toml backend/poetry.lock /app/backend/
 
 RUN pip install --no-cache-dir poetry \
     && poetry install --no-dev
@@ -29,9 +29,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN playwright install
 
-COPY . /app/
+COPY backend/ /app/backend/
 
 EXPOSE 8000
 
 CMD ["sh", "-c", "xvfb-run -a uvicorn app.api.endpoints.main:app --host 0.0.0.0 --port 8000"]
-
