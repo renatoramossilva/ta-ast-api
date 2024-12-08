@@ -10,6 +10,8 @@ python = "^3.12"
 fastapi = "^0.115.6"
 playwright = "^1.49.0"
 uvicorn = "^0.32.1"
+sqlalchemy = "^2.0.36"
+psycopg2 = "^2.9.10"
 
 
 [build-system]
