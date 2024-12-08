@@ -47,3 +47,21 @@ async def get_info(page_url: str) -> dict:
             "description": await description.text_content(),
             "review": n.split()[-1]
         }
+
+def convert_comma_to_dot(number_str: str) -> float:
+    """
+    Converts a number string with a comma as the decimal separator to a float.
+
+    **Request Body:**
+        - `number_str` (str): The number string to convert.
+
+    **Returns:**
+        The converted float number.
+
+    **Raises:**
+        ValueError: If the number string is not in a valid format.
+    """
+    try:
+        return float(number_str.replace(",", "."))
+    except ValueError:
+        raise ValueError(f"Invalid number format: {number_str}")
