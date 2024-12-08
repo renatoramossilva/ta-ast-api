@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from app.api.endpoints.hotels import router
 
 from sqlalchemy.orm import Session
-from app import models, database
+from app.database import models, database
 
 app = FastAPI()
 
