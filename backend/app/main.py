@@ -1,17 +1,13 @@
-
 from fastapi import FastAPI
-
-from app.api.endpoints.hotels import router
-
 from sqlalchemy.orm import Session
-from app import models, database
+from . import models, database
+import os
 
 app = FastAPI()
 
-app.include_router(router)
-
 @app.on_event("startup")
 def startup():
+    print("startup")
     models.Base.metadata.create_all(bind=database.engine)
 
 @app.get("/")
