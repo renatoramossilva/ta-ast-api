@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright
-from fastapi import APIRouter
-from app.api.endpoints.services import get_info, transform_search_name, convert_comma_to_dot
+from fastapi import APIRouter, HTTPException
+from app.api.endpoints.services import get_info, transform_search_name, convert_comma_to_dot, Hotel
 from app.database import crud
 
 router = APIRouter()
@@ -38,7 +38,6 @@ async def post(hotel_name):
 
         url = await page.query_selector('div[data-testid="property-card-container"] div div a')
         hotel_data = await get_info(await url.get_attribute("href"))
-
         saved_hotel = crud.create_hotel(
             name=hotel_data["name"],
             address=hotel_data["address"],
@@ -48,3 +47,17 @@ async def post(hotel_name):
         )
 
     return {"message": "Hotel data saved successfully", "hotel": saved_hotel}
+
+@router.post("/save")
+async def save(hotel: Hotel):
+    try:
+        saved_hotel = crud.create_hotel(
+            name=hotel.name,
+            address=hotel.address,
+            description=hotel.description,
+            review=hotel.review,
+            db=crud.get_db()
+        )
+        return {"message": "Hotel data saved successfully", "hotel": saved_hotel}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
