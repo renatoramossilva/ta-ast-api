@@ -1,4 +1,12 @@
+from typing import Optional
 from playwright.async_api import async_playwright
+from pydantic import BaseModel
+
+class Hotel(BaseModel):
+    name: str
+    address: str
+    description: Optional[str]
+    review: float
 
 def transform_search_name(name: str) -> str:
     """
@@ -44,8 +52,8 @@ async def get_info(page_url: str) -> dict:
         return {
             "name": await name.text_content(),
             "address": await address.text_content(),
-            "description": await description.text_content(),
-            "review": n.split()[-1]
+            "description": "some_desc", # await description.text_content(),
+            "review": convert_comma_to_dot(n.split()[-1])
         }
 
 def convert_comma_to_dot(number_str: str) -> float:
