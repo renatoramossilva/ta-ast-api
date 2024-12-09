@@ -25,6 +25,19 @@ services:
     networks:
       - backend-network
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app/frontend
+    working_dir: /app/frontend
+    command: ["npm", "start"]
+    networks:
+      - backend-network
+
 volumes:
   postgres-data:
 
