@@ -1,9 +1,20 @@
-from typing import Optional
+"""This module provides services for scraping hotel information from web pages using Playwright."""
+from typing import Dict, Optional, Union
 from playwright.async_api import async_playwright
 from pydantic import BaseModel
 
 
 class Hotel(BaseModel):
+    """
+    Hotel model representing a hotel entity.
+
+    **Request Body:**
+     - `name` (str): The name of the hotel.
+     - `address` (str): The address of the hotel.
+     - `description` (Optional[str]): A brief description of the hotel.
+     - `review` (float): The review rating of the hotel.
+    """
+
     name: str
     address: str
     description: Optional[str]
@@ -22,7 +33,7 @@ def transform_search_name(name: str) -> str:
     return name.replace(" ", "+").lower()
 
 
-async def get_info(page_url: str) -> dict:
+async def get_info(page_url: str) -> Dict[str, Union[str, float]]:
     """
     Fetch hotel information from the given page URL.
 
@@ -49,19 +60,22 @@ async def get_info(page_url: str) -> dict:
         address = await page.query_selector(
             "#wrap-hotelpage-top > div:nth-child(4) > div > div > span.f419a93f12 > div"
         )
-        description = await page.query_selector(
-            "#basiclayout > div.hotelchars > div.page-section.hp--desc_highlights.js-k2-hp--block > div > div.bui-grid__column.bui-grid__column-8.k2-hp--description > div.hp-description > div.hp_desc_main_content > div > div > p.a53cbfa6de.b3efd73f69"
+        description = await page.query_selector(  #pylint: disable=unused-variable
+            "#basiclayout > div.hotelchars > "
+            "div.page-section.hp--desc_highlights.js-k2-hp--block >  div > "
+            "div.bui-grid__column.bui-grid__column-8.k2-hp--description > div.hp-description > "
+            "div.hp_desc_main_content > div > div > p.a53cbfa6de.b3efd73f69"
         )
         review = await page.query_selector(
             'div[data-testid="review-score-right-component"] div'
         )
-        n = await review.text_content()
+        rev = await review.text_content()
 
         return {
             "name": await name.text_content(),
             "address": await address.text_content(),
             "description": "some_desc",  # await description.text_content(),
-            "review": convert_comma_to_dot(n.split()[-1]),
+            "review": convert_comma_to_dot(rev.split()[-1]),
         }
 
 
@@ -80,5 +94,5 @@ def convert_comma_to_dot(number_str: str) -> float:
     """
     try:
         return float(number_str.replace(",", "."))
-    except ValueError:
-        raise ValueError(f"Invalid number format: {number_str}")
+    except ValueError as exc:
+        raise ValueError(f"Invalid number format: {number_str}") from exc

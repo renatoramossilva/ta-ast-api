@@ -1,10 +1,11 @@
+"""
+Main FastAPI application setup with CORS middleware and database initialization.
+"""
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.endpoints.hotels import router
-
-from sqlalchemy.orm import Session
 from app.database import models, database
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -20,10 +21,21 @@ app.include_router(router)
 
 
 @app.on_event("startup")
-def startup():
+def startup() -> None:
+    """
+    Initializes the database by creating all tables defined in the models.
+    """
+
     models.Base.metadata.create_all(bind=database.engine)
 
 
 @app.get("/")
-def read_root():
+def read_root() -> dict:
+    """
+    Handle the root endpoint and return a welcome message.
+
+    **Returns:**
+        dict: A dictionary containing a welcome message.
+    """
+
     return {"message": "Welcome to FastAPI with PostgreSQL!"}
