@@ -5,10 +5,12 @@ import os
 
 app = FastAPI()
 
+
 @app.on_event("startup")
 def startup():
     print("startup")
     models.Base.metadata.create_all(bind=database.engine)
+
 
 @app.get("/")
 def read_root():

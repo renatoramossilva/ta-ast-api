@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 
 from app.api.endpoints.hotels import router
@@ -19,9 +18,11 @@ app.add_middleware(
 
 app.include_router(router)
 
+
 @app.on_event("startup")
 def startup():
     models.Base.metadata.create_all(bind=database.engine)
+
 
 @app.get("/")
 def read_root():
