@@ -2,11 +2,13 @@ from typing import Optional
 from playwright.async_api import async_playwright
 from pydantic import BaseModel
 
+
 class Hotel(BaseModel):
     name: str
     address: str
     description: Optional[str]
     review: float
+
 
 def transform_search_name(name: str) -> str:
     """
@@ -44,17 +46,24 @@ async def get_info(page_url: str) -> dict:
         await page.goto(page_url, timeout=60000)
 
         name = await page.query_selector('div[id="hp_hotel_name"] div h2')
-        address = await page.query_selector('#wrap-hotelpage-top > div:nth-child(4) > div > div > span.f419a93f12 > div')
-        description = await page.query_selector('#basiclayout > div.hotelchars > div.page-section.hp--desc_highlights.js-k2-hp--block > div > div.bui-grid__column.bui-grid__column-8.k2-hp--description > div.hp-description > div.hp_desc_main_content > div > div > p.a53cbfa6de.b3efd73f69')
-        review = await page.query_selector('div[data-testid="review-score-right-component"] div')
+        address = await page.query_selector(
+            "#wrap-hotelpage-top > div:nth-child(4) > div > div > span.f419a93f12 > div"
+        )
+        description = await page.query_selector(
+            "#basiclayout > div.hotelchars > div.page-section.hp--desc_highlights.js-k2-hp--block > div > div.bui-grid__column.bui-grid__column-8.k2-hp--description > div.hp-description > div.hp_desc_main_content > div > div > p.a53cbfa6de.b3efd73f69"
+        )
+        review = await page.query_selector(
+            'div[data-testid="review-score-right-component"] div'
+        )
         n = await review.text_content()
 
         return {
             "name": await name.text_content(),
             "address": await address.text_content(),
-            "description": "some_desc", # await description.text_content(),
-            "review": convert_comma_to_dot(n.split()[-1])
+            "description": "some_desc",  # await description.text_content(),
+            "review": convert_comma_to_dot(n.split()[-1]),
         }
+
 
 def convert_comma_to_dot(number_str: str) -> float:
     """
