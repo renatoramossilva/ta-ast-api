@@ -32,7 +32,7 @@ jobs:
 
       - name: Run Black
         run: |
-            poetry run black --check .  # Check formatting without making changes
+            poetry run black --check --diff .  # Check formatting without making changes
 
       - name: Run Pylint
         run: |
