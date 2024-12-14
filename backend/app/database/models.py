@@ -1,9 +1,11 @@
 """This module defines the SQLAlchemy ORM model for the Hotel entity."""
 
+from typing import Any
+
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+Base: Any = declarative_base()
 
 
 class Hotel(Base):  # pylint: disable=too-few-public-methods
