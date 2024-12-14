@@ -46,3 +46,7 @@ jobs:
       - name: Run isort
         run: |
             poetry run isort --check-only .  # Check import sorting without making changes
+
+      - name: Run mypy
+        run: |
+            poetry run mypy **/*.py
