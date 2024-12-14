@@ -1,10 +1,13 @@
+"""This module defines the SQLAlchemy ORM model for the Hotel entity."""
+
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
 
-class Hotel(Base):
+class Hotel(Base):  # pylint: disable=too-few-public-methods
+    """SQLAlchemy ORM model for the Hotel entity."""
     __tablename__ = "hotels"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -14,4 +17,7 @@ class Hotel(Base):
     review = Column(Float)
 
     def __repr__(self):
-        return f"<Hotel(name={self.name}, address={self.address}, description={self.description}, review={self.review})>"
+        return (
+            f"<Hotel(name={self.name}, address={self.address}, "
+            f"description={self.description}, review={self.review})>"
+        )

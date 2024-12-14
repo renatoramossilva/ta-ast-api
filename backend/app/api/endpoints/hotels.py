@@ -1,3 +1,7 @@
+"""
+Endpoints for scraping and saving hotel data.
+"""
+from typing import Dict, Union
 from playwright.async_api import async_playwright
 from fastapi import APIRouter, HTTPException
 from app.api.endpoints.services import (
@@ -12,7 +16,7 @@ router = APIRouter()
 
 
 @router.get("/scrape")
-async def scrape(hotel_name: str) -> dict:
+async def scrape(hotel_name: str) -> Dict[str, Union[str, float]]:
     """
     Scrape booking.com using playwright
 
@@ -40,7 +44,21 @@ async def scrape(hotel_name: str) -> dict:
 
 
 @router.post("/post")
-async def post(hotel_name):
+async def post(hotel_name) -> Dict[str, Union[str, Hotel]]:
+    """
+    Fetches hotel information from Booking.com based on the provided hotel name,
+    processes the data, and saves it to the database.
+
+    **Request Body:**
+     - `hotel_name` (str): The name of the hotel to search for.
+
+    **Returns:**
+     - `dict`: A dictionary containing a success message and the saved hotel data.
+
+    **Raises:**
+     - Exception: If there is an error during the process of fetching or saving hotel data.
+
+    """
     async with async_playwright() as p:
         page_url = (
             "https://www.booking.com/searchresults.es.html?ss="
@@ -66,7 +84,20 @@ async def post(hotel_name):
 
 
 @router.post("/save")
-async def save(hotel: Hotel):
+async def save(hotel: Hotel) -> Dict[str, Union[str, Hotel]]:
+    """
+    Save a hotel to the database.
+
+    **Request Body:**
+      - `hotel` (Hotel): The hotel object containing the details to be saved.
+
+    **Returns:**
+     - `dict`: A dictionary containing a success message and the saved hotel data.
+
+    **Raises:**
+        HTTPException: If an error occurs during the saving process,
+            an HTTPException with status code 500 is raised.
+    """
     try:
         saved_hotel = crud.create_hotel(
             name=hotel.name,
@@ -76,5 +107,8 @@ async def save(hotel: Hotel):
             db=crud.get_db(),
         )
         return {"message": "Hotel data saved successfully", "hotel": saved_hotel}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"An error occurred: {str(exc)}"
+        ) from exc
