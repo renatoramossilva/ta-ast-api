@@ -36,7 +36,12 @@ jobs:
 
       - name: Run Pylint
         run: |
-            poetry run pylint **/*.py
+            poetry run pylint --output-format=json **/*.py > pylint-report.json
+
+      - name: Show Pylint Report
+        run: |
+            cat pylint-report.json
+        working-directory: ./backend
 
       - name: Run isort
         run: |
