@@ -1,6 +1,7 @@
 """
 Endpoints for scraping and saving hotel data.
 """
+
 from typing import Dict, Union
 from playwright.async_api import async_playwright
 from fastapi import APIRouter, HTTPException
@@ -109,6 +110,5 @@ async def save(hotel: Hotel) -> Dict[str, Union[str, Hotel]]:
         return {"message": "Hotel data saved successfully", "hotel": saved_hotel}
     except Exception as exc:
         raise HTTPException(
-            status_code=500,
-            detail=f"An error occurred: {str(exc)}"
+            status_code=500, detail=f"An error occurred: {str(exc)}"
         ) from exc

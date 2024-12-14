@@ -8,6 +8,7 @@ Base = declarative_base()
 
 class Hotel(Base):  # pylint: disable=too-few-public-methods
     """SQLAlchemy ORM model for the Hotel entity."""
+
     __tablename__ = "hotels"
 
     id = Column(Integer, primary_key=True, index=True)

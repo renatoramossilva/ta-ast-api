@@ -1,6 +1,7 @@
 """
 Main FastAPI application setup with CORS middleware and database initialization.
 """
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
