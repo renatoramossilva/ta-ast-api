@@ -1,4 +1,5 @@
 """This module provides services for scraping hotel information from web pages using Playwright."""
+
 from typing import Dict, Optional, Union
 from playwright.async_api import async_playwright
 from pydantic import BaseModel
@@ -60,7 +61,7 @@ async def get_info(page_url: str) -> Dict[str, Union[str, float]]:
         address = await page.query_selector(
             "#wrap-hotelpage-top > div:nth-child(4) > div > div > span.f419a93f12 > div"
         )
-        description = await page.query_selector(  #pylint: disable=unused-variable
+        description = await page.query_selector(  # pylint: disable=unused-variable
             "#basiclayout > div.hotelchars > "
             "div.page-section.hp--desc_highlights.js-k2-hp--block >  div > "
             "div.bui-grid__column.bui-grid__column-8.k2-hp--description > div.hp-description > "
