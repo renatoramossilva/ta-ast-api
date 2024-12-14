@@ -1,7 +1,7 @@
 """Main module for FastAPI application with PostgreSQL database integration."""
 
+from app.database import database, models
 from fastapi import FastAPI
-from app.database import models, database
 
 app = FastAPI()
 

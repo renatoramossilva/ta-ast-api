@@ -37,3 +37,7 @@ jobs:
       - name: Run Pylint
         run: |
             poetry run pylint **/*.py
+
+      - name: Run isort
+        run: |
+            poetry run isort --check-only .  # Check import sorting without making changes

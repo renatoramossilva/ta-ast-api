@@ -2,11 +2,10 @@
 Main FastAPI application setup with CORS middleware and database initialization.
 """
 
+from app.api.endpoints.hotels import router
+from app.database import database, models
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.api.endpoints.hotels import router
-from app.database import models, database
 
 app = FastAPI()
 

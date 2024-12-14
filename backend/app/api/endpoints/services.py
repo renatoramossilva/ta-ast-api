@@ -1,6 +1,7 @@
 """This module provides services for scraping hotel information from web pages using Playwright."""
 
 from typing import Dict, Optional, Union
+
 from playwright.async_api import async_playwright
 from pydantic import BaseModel
 
