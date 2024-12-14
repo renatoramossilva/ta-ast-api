@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 @router.get("/scrape")
-async def scrape(hotel_name: str) -> Dict[str, Union[str, float]]:
+async def scrape(hotel_name: str) -> Dict[str, Union[str, float, None]]:
     """
     Scrape booking.com using playwright
 
@@ -42,7 +42,14 @@ async def scrape(hotel_name: str) -> Dict[str, Union[str, float]]:
             'div[data-testid="property-card-container"] div div a'
         )
 
-        return await get_info(await url.get_attribute("href"))
+        if url is None:
+            raise ValueError("No URL found for the hotel")
+
+        href = await url.get_attribute("href")
+        if href is None:
+            raise ValueError("URL does not have an href attribute")
+
+        return await get_info(href)
 
 
 @router.post("/post")
@@ -73,12 +80,19 @@ async def post(hotel_name) -> Dict[str, Union[str, Hotel]]:
         url = await page.query_selector(
             'div[data-testid="property-card-container"] div div a'
         )
-        hotel_data = await get_info(await url.get_attribute("href"))
+        if url is None:
+            raise ValueError("No property URL found on the page")
+
+        href = await url.get_attribute("href")
+
+        if href is None:
+            raise ValueError("The selected property does not have an href attribute")
+        hotel_data = await get_info(href)
         saved_hotel = crud.create_hotel(
-            name=hotel_data["name"],
-            address=hotel_data["address"],
-            description="some description",
-            review=convert_comma_to_dot(hotel_data["review"]),
+            name=str(hotel_data["name"]),
+            address=str(hotel_data["address"]),
+            description=str(hotel_data["description"]),
+            review=convert_comma_to_dot(str(hotel_data["review"])),
             db=crud.get_db(),
         )
 
@@ -104,7 +118,7 @@ async def save(hotel: Hotel) -> Dict[str, Union[str, Hotel]]:
         saved_hotel = crud.create_hotel(
             name=hotel.name,
             address=hotel.address,
-            description=hotel.description,
+            description="some description",
             review=hotel.review,
             db=crud.get_db(),
         )

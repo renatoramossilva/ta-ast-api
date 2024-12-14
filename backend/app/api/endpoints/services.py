@@ -19,7 +19,7 @@ class Hotel(BaseModel):
 
     name: str
     address: str
-    description: Optional[str]
+    description: str
     review: float
 
 
@@ -35,7 +35,7 @@ def transform_search_name(name: str) -> str:
     return name.replace(" ", "+").lower()
 
 
-async def get_info(page_url: str) -> Dict[str, Union[str, float]]:
+async def get_info(page_url: str) -> Dict[str, Union[str, float, None]]:
     """
     Fetch hotel information from the given page URL.
 
@@ -71,13 +71,17 @@ async def get_info(page_url: str) -> Dict[str, Union[str, float]]:
         review = await page.query_selector(
             'div[data-testid="review-score-right-component"] div'
         )
-        rev = await review.text_content()
+        rev = await review.text_content() if review else None
 
         return {
-            "name": await name.text_content(),
-            "address": await address.text_content(),
-            "description": "some_desc",  # await description.text_content(),
-            "review": convert_comma_to_dot(rev.split()[-1]),
+            "name": await name.text_content() if name else "Unknown Name",
+            "address": await address.text_content() if address else "Unknown Address",
+            "description": (
+                await description.text_content()
+                if description
+                else "Unknown Description"
+            ),
+            "review": convert_comma_to_dot(rev.split()[-1]) if rev else None,
         }
 
 
