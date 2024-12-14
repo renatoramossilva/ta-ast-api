@@ -25,7 +25,7 @@ def startup() -> None:
     """
     Initializes the database by creating all tables defined in the models.
     """
-
+    a = 1
     models.Base.metadata.create_all(bind=database.engine)
 
 
