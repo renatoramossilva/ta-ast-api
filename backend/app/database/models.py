@@ -1,6 +1,6 @@
 """This module defines the SQLAlchemy ORM model for the Hotel entity."""
 
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()

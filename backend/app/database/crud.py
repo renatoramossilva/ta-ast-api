@@ -1,8 +1,8 @@
 """This module provides CRUD operations for the Hotel model in the database."""
 
-from sqlalchemy.orm import Session
 from app.database import models
 from app.database.database import SessionLocal
+from sqlalchemy.orm import Session
 
 
 def get_db():

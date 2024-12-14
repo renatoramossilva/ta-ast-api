@@ -3,15 +3,16 @@ Endpoints for scraping and saving hotel data.
 """
 
 from typing import Dict, Union
-from playwright.async_api import async_playwright
-from fastapi import APIRouter, HTTPException
+
 from app.api.endpoints.services import (
+    Hotel,
+    convert_comma_to_dot,
     get_info,
     transform_search_name,
-    convert_comma_to_dot,
-    Hotel,
 )
 from app.database import crud
+from fastapi import APIRouter, HTTPException
+from playwright.async_api import async_playwright
 
 router = APIRouter()
 
