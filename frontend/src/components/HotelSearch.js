@@ -7,11 +7,11 @@ const HotelSearch = () => {
   const [hotelData, setHotelData] = useState(null);
   const [message, setMessage] = useState("");
 
-  const API_URL = "http://localhost:8000"; // URL do backend
+  const API_URL = "http://localhost:8000"; // backend URL
 
   const fetchHotelData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/scrape?hotel_name=${hotelName}`);
+      const response = await axios.get(`${API_URL}/api/hotels/scrape?hotel_name=${hotelName}`);
       console.log("API response:", response.data);
       setHotelData(response.data);
       setMessage("");
@@ -38,7 +38,7 @@ const HotelSearch = () => {
 
       console.log("Data to send", dataToSend);
 
-      const response = await axios.post(`${API_URL}/save`, dataToSend);
+      const response = await axios.post(`${API_URL}/api/hotels`, dataToSend);
 
       console.log("Backend response", response.data);
       setMessage("Data saved successfully.");
@@ -51,7 +51,7 @@ const HotelSearch = () => {
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <h1>Search Hotel</h1>
-      {/* Campo para inserir o nome do hotel */}
+      {/* Field to insert Hotel name */}
       <input
         type="text"
         placeholder="Type hotel name..."
