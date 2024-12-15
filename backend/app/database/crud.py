@@ -14,11 +14,17 @@ def get_db():
 
     **Yields:**
      - `SessionLocal`: A database session object.
+
+    **Exceptions:**
+        - `Exception`: If an error occurs while getting the database session, an exception is raised.
     """
     LOG.debug("Getting database session")
     db = SessionLocal()
     try:
         return db
+    except Exception as exc:
+        LOG.error("An error occurred while getting the database session")
+        raise exc
     finally:
         db.close()
 
@@ -36,6 +42,9 @@ def create_hotel(name: str, address: str, description: str, review: float, db: S
 
     **Returns:**
      - `models.Hotel`: The newly created hotel record.
+
+    **Exceptions:**
+        - `Exception`: If an error occurs while creating the hotel record, an exception is raised.
     """
     LOG.debug(f"Creating new hotel record for: {name}")
 
