@@ -90,6 +90,32 @@ async def save(hotel: Hotel) -> Dict[str, Union[str, Hotel]]:
 
 @router.get("/api/hotels")
 async def get_hotels():
-    LOG.debug("Getting basic information for all hotels")
     db = crud.get_db()
-    return crud.get_hotels_basic_info(db)
+    hotels = crud.get_hotels_basic_info(db)
+    if hotels is None:
+        raise HTTPException(status_code=404, detail="Hotels not found")
+
+    return hotels
+
+
+@router.get("/api/hotels/{id}/", response_model=Hotel)
+async def get_hotel(id: int) -> Hotel:
+    """
+    Get a specific hotel by ID, including its details.
+
+    **Request Body:**
+        - `id` (int): The hotel ID to retrieve.
+
+    **Returns:**
+        Hotel: The hotel object containing the details.
+
+    **Raises:**
+        HTTPException: If the hotel is not found, an HTTPException with status code 404 is raised.
+    """
+    db = crud.get_db()
+    hotel = crud.get_hotel_by_id(db=db, hotel_id=id)
+
+    if hotel is None:
+        raise HTTPException(status_code=404, detail="Hotel not found")
+
+    return hotel

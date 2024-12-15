@@ -81,8 +81,42 @@ def get_hotels_basic_info(db: Session):
 
     try:
         hotels = db.query(models.Hotel).all()
-        LOG.debug(f"Found {len(hotels)} hotels")
-        return [{"name": hotel.name, "review": hotel.review} for hotel in hotels]
     except Exception as exc:
         LOG.error("An error occurred while getting hotel information")
         raise exc
+
+    if not hotels:
+        LOG.warning("No hotels found")
+        return None
+
+    LOG.debug(f"Found {len(hotels)} hotels")
+    return [{"name": hotel.name, "review": hotel.review} for hotel in hotels]
+
+
+def get_hotel_by_id(db: Session, hotel_id: int):
+    """
+    Retrieve a specific hotel by its ID.
+
+    **Request Body:**
+        - `db` (Session): The database session.
+        - `hotel_id` (int): The ID of the hotel to retrieve.
+
+    **Returns:**
+        - `models.Hotel`: The hotel record with the specified ID.
+
+    **Exceptions:**
+        - `Exception`: If an error occurs while retrieving the hotel record, an exception is raised.
+    """
+    LOG.debug(f"Getting hotel with ID: {hotel_id}")
+    try:
+        hotel = db.query(models.Hotel).filter(models.Hotel.id == hotel_id).first()
+    except Exception as exc:
+        LOG.error(f"An error occurred while getting hotel with ID: {hotel_id}")
+        raise exc
+
+    if not hotel:
+        LOG.warning(f"No hotel found with ID: {hotel_id}")
+        return None
+
+    LOG.debug(f"Found hotel: {hotel.name}")
+    return hotel
