@@ -1,8 +1,11 @@
 """This module provides CRUD operations for the Hotel model in the database."""
 
+from app.api.endpoints.logger import setup_logger
 from app.database import models
 from app.database.database import SessionLocal
 from sqlalchemy.orm import Session
+
+LOG = setup_logger("ta-ast-crud")
 
 
 def get_db():
@@ -12,7 +15,7 @@ def get_db():
     **Yields:**
      - `SessionLocal`: A database session object.
     """
-
+    LOG.debug("Getting database session")
     db = SessionLocal()
     try:
         return db
@@ -34,11 +37,19 @@ def create_hotel(name: str, address: str, description: str, review: float, db: S
     **Returns:**
      - `models.Hotel`: The newly created hotel record.
     """
+    LOG.debug(f"Creating new hotel record for: {name}")
 
-    db_hotel = models.Hotel(
-        name=name, address=address, description=description, review=review
-    )
-    db.add(db_hotel)
-    db.commit()
-    db.refresh(db_hotel)
-    return db_hotel
+    try:
+        db_hotel = models.Hotel(
+            name=name, address=address, description=description, review=review
+        )
+        db.add(db_hotel)
+        db.commit()
+        db.refresh(db_hotel)
+
+        LOG.debug(f"Hotel {name} created successfully")
+        return db_hotel
+    except:
+        LOG.error(f"An error occurred while creating hotel: {name}")
+        db.rollback()
+        raise

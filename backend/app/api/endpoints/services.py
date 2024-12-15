@@ -2,8 +2,11 @@
 
 from typing import Dict, Optional, Union
 
+from app.api.endpoints.logger import setup_logger
 from playwright.async_api import async_playwright
 from pydantic import BaseModel
+
+LOG = setup_logger("ta-ast-services")
 
 
 class Hotel(BaseModel):
@@ -32,7 +35,10 @@ def transform_search_name(name: str) -> str:
     **Returns:**
         str: The transformed search name.
     """
-    return name.replace(" ", "+").lower()
+    if name:
+        return name.replace(" ", "+").lower()
+    else:
+        raise ValueError("Invalid search name")
 
 
 async def get_info(page_url: str) -> Dict[str, Union[str, float, None]]:
@@ -53,11 +59,13 @@ async def get_info(page_url: str) -> Dict[str, Union[str, float, None]]:
             "review": "8.5"
         }
     """
+    LOG.debug(f"Scraping URL: {page_url}")
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)
         page = await browser.new_page()
         await page.goto(page_url, timeout=60000)
 
+        LOG.debug("Getting hotel information")
         name = await page.query_selector('div[id="hp_hotel_name"] div h2')
         address = await page.query_selector(
             "#wrap-hotelpage-top > div:nth-child(4) > div > div > span.f419a93f12 > div"
@@ -73,6 +81,7 @@ async def get_info(page_url: str) -> Dict[str, Union[str, float, None]]:
         )
         rev = await review.text_content() if review else None
 
+        LOG.debug(f"Hotel information: {name}, {address}, {description}, {rev}")
         return {
             "name": await name.text_content() if name else "Unknown Name",
             "address": await address.text_content() if address else "Unknown Address",
@@ -101,4 +110,5 @@ def convert_comma_to_dot(number_str: str) -> float:
     try:
         return float(number_str.replace(",", "."))
     except ValueError as exc:
+        LOG.error(f"Invalid number format: {number_str}")
         raise ValueError(f"Invalid number format: {number_str}") from exc
