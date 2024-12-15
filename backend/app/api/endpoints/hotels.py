@@ -90,6 +90,12 @@ async def save(hotel: Hotel) -> Dict[str, Union[str, Hotel]]:
 
 @router.get("/api/hotels")
 async def get_hotels():
+    """
+    Get all hotels basic information.
+
+    **Returns:**
+        List[Hotel]: A list of hotel objects containing basic information.
+    """
     db = crud.get_db()
     hotels = crud.get_hotels_basic_info(db)
     if hotels is None:
