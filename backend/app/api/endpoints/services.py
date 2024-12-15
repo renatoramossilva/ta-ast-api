@@ -1,12 +1,20 @@
 """This module provides services for scraping hotel information from web pages using Playwright."""
 
-from typing import Dict, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from app.api.endpoints.logger import setup_logger
-from playwright.async_api import async_playwright
+from playwright.async_api import Page, async_playwright
 from pydantic import BaseModel
 
 LOG = setup_logger("ta-ast-services")
+
+
+DATA = {
+    "name": 'div[id="hp_hotel_name"] div h2',
+    "address": "#wrap-hotelpage-top > div:nth-child(4) > div > div > span.f419a93f12 > div",
+    "description": "#basiclayout > div.hotelchars > div.page-section.hp--desc_highlights.js-k2-hp--block >  div > div.bui-grid__column.bui-grid__column-8.k2-hp--description > div.hp-description > div.hp_desc_main_content > div > div > p.a53cbfa6de.b3efd73f69",
+    "review": 'div[data-testid="review-score-right-component"] div',
+}
 
 
 class Hotel(BaseModel):
@@ -41,6 +49,43 @@ def transform_search_name(name: str) -> str:
         raise ValueError("Invalid search name")
 
 
+async def get_text_content(page: Page, selector: str) -> Optional[str]:
+    """
+    Get the text content of an element identified by the given selector.
+
+    **Request Body:**
+        - `page` (playwright.async_api.Page): The Playwright page object.
+        - `selector` (str): The selector to identify the element.
+
+    **Returns:**
+        str: The text content of the element.
+    """
+    LOG.debug(f"Getting text content for selector: {selector}")
+    review = await page.query_selector(selector)
+
+    if review:
+        text_content = await review.text_content()
+        LOG.debug(f"Found review element: {text_content}")
+        return text_content
+    else:
+        LOG.error(f"No review element found for selector: {selector}")
+        return None
+
+
+async def get_data(page: Page, data: Dict[Any, Any] = DATA) -> None:
+    """
+    Get the text content of elements identified by the given selectors
+    and assign them to global variables.
+
+    **Request Body:**
+        - `page` (playwright.async_api.Page): The Playwright page object.
+        - `data` (dict): A dictionary containing the element selectors.
+
+    """
+    for key, value in data.items():
+        globals()[key] = await get_text_content(page, value)
+
+
 async def get_info(page_url: str) -> Dict[str, Union[str, float, None]]:
     """
     Fetch hotel information from the given page URL.
@@ -61,36 +106,25 @@ async def get_info(page_url: str) -> Dict[str, Union[str, float, None]]:
     """
     LOG.debug(f"Scraping URL: {page_url}")
     async with async_playwright() as p:
+        # Launch browser
         browser = await p.chromium.launch(headless=False)
         page = await browser.new_page()
         await page.goto(page_url, timeout=60000)
 
         LOG.debug("Getting hotel information")
-        name = await page.query_selector('div[id="hp_hotel_name"] div h2')
-        address = await page.query_selector(
-            "#wrap-hotelpage-top > div:nth-child(4) > div > div > span.f419a93f12 > div"
-        )
-        description = await page.query_selector(  # pylint: disable=unused-variable
-            "#basiclayout > div.hotelchars > "
-            "div.page-section.hp--desc_highlights.js-k2-hp--block >  div > "
-            "div.bui-grid__column.bui-grid__column-8.k2-hp--description > div.hp-description > "
-            "div.hp_desc_main_content > div > div > p.a53cbfa6de.b3efd73f69"
-        )
-        review = await page.query_selector(
-            'div[data-testid="review-score-right-component"] div'
-        )
-        rev = await review.text_content() if review else None
 
-        LOG.debug(f"Hotel information: {name}, {address}, {description}, {rev}")
+        # Get hotel informations defined in DATA
+        await get_data(page)
+
+        LOG.info("Hotel information: ")
+        for k in DATA.keys():
+            LOG.info(f"{k}: {globals()[k]}")
+
         return {
-            "name": await name.text_content() if name else "Unknown Name",
-            "address": await address.text_content() if address else "Unknown Address",
-            "description": (
-                await description.text_content()
-                if description
-                else "Unknown Description"
-            ),
-            "review": convert_comma_to_dot(rev.split()[-1]) if rev else None,
+            "name": globals().get("name"),
+            "address": globals().get("address"),
+            "description": globals().get("description"),
+            "review": convert_comma_to_dot(globals().get("review", "").split()[-1]),
         }
 
 
