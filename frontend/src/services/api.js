@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:8000';
 
 export const fetchHotelData = async (hotelName) => {
     try {
-        const response = await axios.get(`${API_URL}/scrape?hotel_name=${hotelName}`);
+        const response = await axios.get(`${API_URL}/api/hotels/scrape?hotel_name=${hotelName}`);
         console.log("API response", response.data);
         //setHotelData(response.data); //
       } catch (error) {
@@ -21,7 +21,7 @@ export const fetchHotelData = async (hotelName) => {
 
 export const saveHotelData = async (hotelData) => {
   try {
-    const response = await axios.post(`${API_URL}/save`, hotelData);
+    const response = await axios.post(`${API_URL}/api/hotels`, hotelData);
     console.info(response.data);
     return response.data;
   } catch (error) {
