@@ -1,2 +1,7 @@
 # Python
 __pycache__/
+
+# Python: Tools cache
+backend/.pytest_cache/
+backend/.tox/
+backend/.mypy_cache
