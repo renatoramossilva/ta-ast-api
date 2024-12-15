@@ -14,11 +14,17 @@ def get_db():
 
     **Yields:**
      - `SessionLocal`: A database session object.
+
+    **Exceptions:**
+        - `Exception`: If an error occurs while getting the database session, an exception is raised.
     """
     LOG.debug("Getting database session")
     db = SessionLocal()
     try:
         return db
+    except Exception as exc:
+        LOG.error("An error occurred while getting the database session")
+        raise exc
     finally:
         db.close()
 
@@ -36,6 +42,9 @@ def create_hotel(name: str, address: str, description: str, review: float, db: S
 
     **Returns:**
      - `models.Hotel`: The newly created hotel record.
+
+    **Exceptions:**
+        - `Exception`: If an error occurs while creating the hotel record, an exception is raised.
     """
     LOG.debug(f"Creating new hotel record for: {name}")
 
@@ -53,3 +62,27 @@ def create_hotel(name: str, address: str, description: str, review: float, db: S
         LOG.error(f"An error occurred while creating hotel: {name}")
         db.rollback()
         raise
+
+
+def get_hotels_basic_info(db: Session):
+    """
+    Retrieve basic information for all hotels in the database.
+
+    **Request Body:**
+     - `db` (Session): The database session.
+
+    **Returns:**
+     - `List[models.Hotel]`: A list of hotel records containing basic information.
+
+    **Exceptions:**
+        - `Exception`: If an error occurs while getting hotel information, an exception is raised.
+    """
+    LOG.debug("Getting basic information for all hotels")
+
+    try:
+        hotels = db.query(models.Hotel).all()
+        LOG.debug(f"Found {len(hotels)} hotels")
+        return [{"name": hotel.name, "review": hotel.review} for hotel in hotels]
+    except Exception as exc:
+        LOG.error("An error occurred while getting hotel information")
+        raise exc
