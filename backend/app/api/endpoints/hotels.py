@@ -86,3 +86,10 @@ async def save(hotel: Hotel) -> Dict[str, Union[str, Hotel]]:
         raise HTTPException(
             status_code=500, detail=f"An error occurred: {str(exc)}"
         ) from exc
+
+
+@router.get("/api/hotels")
+async def get_hotels():
+    LOG.debug("Getting basic information for all hotels")
+    db = crud.get_db()
+    return crud.get_hotels_basic_info(db)
