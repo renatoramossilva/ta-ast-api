@@ -3,7 +3,9 @@ name = "ta-ast-api"
 version = "0.1.0"
 description = "Technical Test Software Engineer Athlos"
 authors = ["Renato Silva <renatoramossilva@gmail.com>"]
-readme = "README.md"
+packages = [
+    { include = "app" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -16,6 +18,10 @@ black = "^24.10.0"
 pylint = "^3.3.2"
 isort = "^5.13.2"
 mypy = "^1.13.0"
+tox = "^4.23.2"
+pytest = "^8.3.4"
+pytest-mock = "^3.14.0"
+pytest-asyncio = "^0.25.0"
 
 
 [build-system]
